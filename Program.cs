@@ -7,6 +7,7 @@ using WeatherOutlook;
 using WeatherOutlook.APIClient;
 using WeatherOutlook.APIClient.Response;
 using System.Linq;
+using WeatherOutlook.Utilities;
 
 internal class Program
 {
@@ -41,20 +42,28 @@ internal class Program
         Console.Write("Enter ZipCode: ");
         // Get Users Zip
         var zipcode = Console.ReadLine();
-        Console.WriteLine("Lets get the Outlook for zipcode: " + zipcode);
-        Console.WriteLine();
-        // Display Information:
-        var response = GetOutlookReportByZipCode(zipcode).Result;
 
-        Console.WriteLine(response);
+        if (utils.IsValidZipCode(zipcode))
+        {
+            Console.WriteLine("Lets get the Outlook for zipcode: " + zipcode);
+            Console.WriteLine();
+            // Display Information:
+            var response = await GetOutlookReportByZipCode(zipcode);
+            Console.WriteLine(response);
+        }
+        else
+        {
+            Console.WriteLine("Invalid Zip Please Enter Aagin...");
+        }
     }
 
     public static async Task<string> GetOutlookReportByZipCode(string zipcode)
     {
-        string token = string.Empty;
-        var restClient = new APIClient(Constants.WeatherGovAPIBaseURL, token);
-        var reseponse = restClient.GetRequest("/gridpoints/IND/59,29/forecast");
-        ForecastResponse forecastResponse = JsonConvert.DeserializeObject<ForecastResponse>(reseponse.Result);
+
+        var restClient = new APIClient(Constants.WeatherGovAPIBaseURL);
+        var reseponse =  restClient.GetRequest("/gridpoints/IND/59,29/forecast").Result;
+        
+        ForecastResponse forecastResponse = JsonConvert.DeserializeObject<ForecastResponse>(reseponse);
         
         var sb = new StringBuilder();
         if (forecastResponse != null)

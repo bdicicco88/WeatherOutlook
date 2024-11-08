@@ -13,14 +13,18 @@ namespace WeatherOutlook.APIClient
         private readonly string _token;
         private bool _UseBearerToken;
 
-        public APIClient(string baseUrl, string? token)
+        public APIClient(string baseUrl)
         {
             if (string.IsNullOrEmpty(baseUrl))
             {
                 throw new ArgumentException($"'{nameof(baseUrl)}' cannot be null or empty.", nameof(baseUrl));
             }
-
             _client = new RestClient(baseUrl);
+        }
+
+        public APIClient(string baseUrl, string token):
+            this(baseUrl)
+        {
 
             if (!String.IsNullOrEmpty(token))
             {
