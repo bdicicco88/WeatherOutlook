@@ -57,23 +57,24 @@ internal class Program
         }
     }
 
-    public static async Task<string> GetOutlookReportByZipCode(string zipcode)
+    public static Task<string> GetOutlookReportByZipCode(string zipcode)
     {
-
+        var sb = new StringBuilder();
         var restClient = new APIClient(Constants.WeatherGovAPIBaseURL);
         var reseponse =  restClient.GetRequest("/gridpoints/IND/59,29/forecast").Result;
         
-        ForecastResponse forecastResponse = JsonConvert.DeserializeObject<ForecastResponse>(reseponse);
-        
-        var sb = new StringBuilder();
-        if (forecastResponse != null)
+        if (reseponse != null)
         {
-            foreach (var period in forecastResponse.properties.periods.Where(period => period.number < 4))
+            ForecastResponse forecastResponse = JsonConvert.DeserializeObject<ForecastResponse>(reseponse); 
+            if (forecastResponse != null)
             {
-                sb.Append($"For {period.name}, The forecast is: {period.detailedForecast}\r\n\r\n");
+                foreach (var period in forecastResponse.properties.periods.Where(period => period.number < 4))
+                {
+                    sb.Append($"For {period.name}, The forecast is: {period.detailedForecast}\r\n\r\n");
+                }
             }
         }
-        return sb.ToString();
+        return Task.FromResult(sb.ToString());
     }
 
 }
