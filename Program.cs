@@ -8,6 +8,7 @@ using WeatherOutlook.APIClient;
 using WeatherOutlook.APIClient.Response;
 using System.Linq;
 using WeatherOutlook.Utilities;
+using System.Text.RegularExpressions;
 
 internal class Program
 {
@@ -59,9 +60,29 @@ internal class Program
 
     public static Task<string> GetOutlookReportByZipCode(string zipcode)
     {
+        var longLatPoints = utils.GetLongLatFromZip(zipcode);
+
         var sb = new StringBuilder();
         var restClient = new APIClient(Constants.WeatherGovAPIBaseURL);
-        var reseponse =  restClient.GetRequest("/gridpoints/IND/59,29/forecast").Result;
+
+        //Get response based on long/lat
+       var restPointsResponse =  restClient.GetRequest($"/points/{longLatPoints}").Result;
+        string forcastsub = null;
+        if (restPointsResponse != null)
+        {
+            PointsResponse points = JsonConvert.DeserializeObject<PointsResponse>(restPointsResponse);
+
+            var getForcast = points.properties.forecast;
+            string pattern = @"/gridpoints/[^/]+/\d+,\d+/forecast";
+
+            Match match = Regex.Match(getForcast, pattern);
+            if (match.Success)
+            {
+               forcastsub = match.Value; // Outputs: /gridpoints/IND/57,78/forecast
+            }
+
+        }
+        var reseponse =  restClient.GetRequest(forcastsub).Result;
         
         if (reseponse != null)
         {
