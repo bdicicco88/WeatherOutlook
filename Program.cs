@@ -55,7 +55,7 @@ internal class Program
         }
         else
         {
-            Console.WriteLine("Invalid Zip Please Enter Aagin...");
+            Console.WriteLine("Invalid Zip Please Enter Again...");
         }
     }
 
