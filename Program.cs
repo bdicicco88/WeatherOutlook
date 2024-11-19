@@ -9,6 +9,7 @@ using WeatherOutlook.APIClient.Response;
 using System.Linq;
 using WeatherOutlook.Utilities;
 using System.Text.RegularExpressions;
+using static WeatherOutlook.APIClient.Response.PointsResponse;
 
 internal class Program
 {
@@ -72,6 +73,7 @@ internal class Program
         {
             PointsResponse points = JsonConvert.DeserializeObject<PointsResponse>(restPointsResponse);
 
+            Console.WriteLine($"Getting Forecast for {points.properties.relativeLocation.properties.city}, {points.properties.relativeLocation.properties.state}");
             var getForcast = points.properties.forecast;
             string pattern = @"/gridpoints/[^/]+/\d+,\d+/forecast";
 
@@ -82,6 +84,7 @@ internal class Program
             }
 
         }
+
         var reseponse =  restClient.GetRequest(forcastsub).Result;
         
         if (reseponse != null)
